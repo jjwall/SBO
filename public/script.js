@@ -1,6 +1,6 @@
 window.WebSocket = window.WebSocket || window.MozWebSocket;
 
-var connection = new WebSocket('ws://localhost:9002');
+var connection = new WebSocket('ws://localhost:9001');
 
 connection.onmessage = function(message) {
     console.log(message);
