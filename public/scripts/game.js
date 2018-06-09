@@ -43,7 +43,7 @@ function connectToPort(ports) {
 
 function onConnect() {
     connection.onopen = function(event) {
-        connection.send('HEYOOOO from PORT ' + currentPort);
+        connection.send('JavaScript client says: HEYOOOO from PORT ' + currentPort);
     }
 
     window.onunload = function() {

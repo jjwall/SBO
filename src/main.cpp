@@ -19,49 +19,33 @@ void on_message(websocketpp::connection_hdl, server::message_ptr msg) {
 void on_open(client* c, websocketpp::connection_hdl hdl) {
     std::string msg = "Hi from the C++!";
     c->send(hdl,msg,websocketpp::frame::opcode::text);
+    //c->close(hdl, websocketpp::close::status::normal,"");
     //c->get_alog().write(websocketpp::log::alevel::app, "Sent Message: "+msg);
 }
 
-template <class T>
-T parse(const std::string& s){
-    T out;
-    std::stringstream ss(s);
-    ss >> out;
-    return out;
-}
-
 int main(int argc, char* argv[]) {
-    server print_server;
+    server websocket_server;
+    client c;
     
-    int PORT = parse<int>(argv[1]);
-    if (PORT == 0) {
-        PORT = 9000;
-    }
+    int PORT = std::atoi(argv[1]);
 
-    print_server.set_message_handler(&on_message);
-    //print_server.set_access_channels(websocketpp::log::alevel::all);
-    //print_server.set_error_channels(websocketpp::log::elevel::all);
+    websocket_server.set_message_handler(&on_message);
+    websocket_server.set_access_channels(websocketpp::log::alevel::all);
+    websocket_server.set_error_channels(websocketpp::log::elevel::all);
 
-    print_server.init_asio();
-    print_server.listen(PORT);
-    print_server.start_accept();
+    websocket_server.init_asio();
+    websocket_server.listen(PORT);
+    websocket_server.start_accept();
 
     std::cout << "Listening for connections on port " << PORT << std::endl;
-    // print_server.run();
 
     // attempt connection to lobby server
-    client c;
-
     std::string uri = "ws://localhost:8080";
-
-    // if (argc == 2) {
-    //     uri = argv[1];
-    // }
 
     try {
         // Set logging to be pretty verbose (everything except message payloads)
         //c.set_access_channels(websocketpp::log::alevel::all);
-        // c.clear_access_channels(websocketpp::log::alevel::frame_payload);
+        //c.clear_access_channels(websocketpp::log::alevel::frame_payload);
         c.set_open_handler(bind(&on_open,&c,::_1));
 
         // Initialize ASIO
@@ -84,13 +68,12 @@ int main(int argc, char* argv[]) {
 
         // con->send("hey from c++", websocketpp::frame::opcode::text);
 
-        // Start the ASIO io_service run loop
-        // this will cause a single connection to be made to the server. c.run()
-        // will exit when this connection is closed.
-        c.run();
+        // start polling both client and server
+        while (true) {
+            c.poll();
+            websocket_server.poll();
+        }
     } catch (websocketpp::exception const & e) {
         std::cout << e.what() << std::endl;
     }
-
-    print_server.run();
 }
