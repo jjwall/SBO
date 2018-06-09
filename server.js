@@ -21,7 +21,10 @@ var portConnections = [
 ]
 
 wss.on('connection', function(connection) {
-	console.log("We are connected to something... hopefully the game server");
+	console.log("This Node app is connected to C++ server");
+	connection.on('message', function(message) {
+		console.log("Node server says: " + message);
+	})
 })
 
 app.use(express.static('./public'));
@@ -66,9 +69,9 @@ function findFirstAvailablePort() {
 
 function spinUpWebSocketServer(port) {
 	var child = cp.spawn("./build_native/sbo.exe", [port]);
-	child.stdout.on('data', function(data) {
-		console.log(data.toString());
-	});
+	// child.stdout.on('data', function(data) {
+	// 	console.log(data.toString());
+	// });
 }
 
 // Disconnect event...

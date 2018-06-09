@@ -1,2 +1,3 @@
 build_native
 node_modules
+.vscode
