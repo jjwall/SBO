@@ -25,7 +25,7 @@ public:
         game_server::connections++;
         std::cout << "We gained a connection: now we have " << game_server::connections << std::endl;
     }
-    void on_close(connection_hdl hdl)
+    static void on_close(connection_hdl hdl)
     {
         game_server::connections--;
         std::cout << "We lost a connection: now we have " << game_server::connections << std::endl;
@@ -58,6 +58,7 @@ int main(int argc, char* argv[])
 
     websocket_server.set_message_handler(&game_server::on_message);
     websocket_server.set_open_handler(&game_server::on_open);
+    websocket_server.set_close_handler(&game_server::on_close);
     websocket_server.set_access_channels(websocketpp::log::alevel::all);
     websocket_server.set_error_channels(websocketpp::log::elevel::all);
 
