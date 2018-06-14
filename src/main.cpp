@@ -13,32 +13,40 @@ typedef websocketpp::config::asio_client::message_type::ptr message_ptr;
 typedef websocketpp::client<websocketpp::config::asio_client> client;
 typedef websocketpp::server<websocketpp::config::asio> server;
 
-class game_server
-{
+class game_server {
 public:
-    static void on_message(connection_hdl, server::message_ptr msg)
-    {
+    static void init(int p) {
+        if (initialized) throw std::runtime_error("DON'T TRY AND RE-INIT");
+        initialized = true;
+        port = p;
+        connections = 0;
+    }
+
+    static void on_message(connection_hdl, server::message_ptr msg) {
         std::cout << msg->get_payload() << std::endl;
     }
-    static void on_open(connection_hdl hdl)
-    {
-        game_server::connections++;
-        std::cout << "We gained a connection: now we have " << game_server::connections << std::endl;
+    static void on_open(connection_hdl hdl) {
+        connections++;
+        std::cout << "We gained a connection: now we have " << connections << std::endl;
     }
-    static void on_close(connection_hdl hdl)
-    {
-        game_server::connections--;
-        std::cout << "We lost a connection: now we have " << game_server::connections << std::endl;
+    static void on_close(connection_hdl hdl) {
+        connections--;
+        std::cout << "We lost a connection: now we have " << connections << std::endl;
     }
-    static int connections;
+
+    static int get_port() {
+        return port;
+    }
+
+private:
+    static bool initialized;
     static int port;
+    static int connections;
 };
 
-class game_client
-{
+class game_client {
 public:
-    static void on_open(client* c, connection_hdl hdl)
-    {
+    static void on_open(client* c, connection_hdl hdl) {
         std::string msg = "Hi from the C++!";
         c->send(hdl,msg,websocketpp::frame::opcode::text);
         //c->close(hdl, websocketpp::close::status::normal,"");
@@ -46,15 +54,15 @@ public:
     }
 };
 
-int game_server::connections = 0;
+bool game_server::initialized = false;
 int game_server::port;
+int game_server::connections;
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
     server websocket_server;
     client c;
-    
-    game_server::port = std::atoi(argv[1]);
+
+    game_server::init(std::atoi(argv[1]));
 
     websocket_server.set_message_handler(&game_server::on_message);
     websocket_server.set_open_handler(&game_server::on_open);
@@ -63,16 +71,15 @@ int main(int argc, char* argv[])
     websocket_server.set_error_channels(websocketpp::log::elevel::all);
 
     websocket_server.init_asio();
-    websocket_server.listen(game_server::port);
+    websocket_server.listen(game_server::get_port());
     websocket_server.start_accept();
 
-    std::cout << "Listening for connections on port " << game_server::port << std::endl;
+    std::cout << "Listening for connections on port " << game_server::get_port() << std::endl;
 
     // attempt connection to lobby server
     std::string uri = "ws://localhost:8080";
 
-    try
-    {
+    try {
         // Set logging to be pretty verbose (everything except message payloads)
         //c.set_access_channels(websocketpp::log::alevel::all);
         //c.clear_access_channels(websocketpp::log::alevel::frame_payload);
@@ -87,8 +94,7 @@ int main(int argc, char* argv[])
         websocketpp::lib::error_code ec;
         client::connection_ptr con = c.get_connection(uri, ec);
 
-        if (ec)
-        {
+        if (ec) {
             std::cout << "could not create connection because: " << ec.message() << std::endl;
             return 0;
         }
@@ -100,14 +106,12 @@ int main(int argc, char* argv[])
         // con->send("hey from c++", websocketpp::frame::opcode::text);
 
         // start polling both client and server
-        while (true)
-        {
+        while (true) {
             c.poll();
             websocket_server.poll();
         }
     }
-    catch (websocketpp::exception const & e)
-    {
+    catch (websocketpp::exception const & e) {
         std::cout << e.what() << std::endl;
     }
 }
