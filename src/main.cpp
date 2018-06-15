@@ -83,8 +83,8 @@ int main(int argc, char* argv[]) {
         // Set logging to be pretty verbose (everything except message payloads)
         //c.set_access_channels(websocketpp::log::alevel::all);
         //c.clear_access_channels(websocketpp::log::alevel::frame_payload);
-        c.set_open_handler(bind(&game_client::on_open,&c,::_1));
-
+        //c.set_open_handler(bind(&game_client::on_open,&c,::_1));
+        c.set_open_handler([&](auto hdl){ game_client::on_open(&c, hdl);});
         // Initialize ASIO
         c.init_asio();
 

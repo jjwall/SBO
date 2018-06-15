@@ -53,15 +53,17 @@ app.get("/playsbo/:port", function(req, res) {
 	// console.log(portConnections);
 });
 
-app.get("/playsbo/getsocket/", function(req, res) {
+app.get("/getportconnections", function(req, res) {
 	// var routePort = req.params.port;
 	// requestConnections(routePort);
 	res.send(portConnectionsDict);
 });
 
-// app.post("/playsbo/disconnect", function(req, res) {
-// 	console.log(req.body);
-// });
+app.post("/creategameroom", function(req, res) {
+	// var routePort = req.params.port;
+	// requestConnections(routePort);
+	res.send(portConnectionsDict);
+});
 
 // function findFirstAvailablePort() {
 // 	for (var i = 0; i < portConnections.length; i++) {
