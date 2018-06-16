@@ -1,3 +1,5 @@
+// Need to clean up unneeded GET requests here
+
 var express = require('express');
 var path = require('path');
 var cp = require('child_process');
@@ -44,6 +46,7 @@ app.get("/", function(req, res) {
 	res.sendFile(path.join(__dirname, "/public/home.html"));
 });
 
+// keeping this here for now to simply spin up servers through the URL...
 app.get("/playsbo/:port", function(req, res) {
 	var routePort = req.params.port;
 	requestConnections(routePort);
@@ -51,6 +54,10 @@ app.get("/playsbo/:port", function(req, res) {
 	// findFirstAvailablePort();
 	// console.log("Port Connections:");
 	// console.log(portConnections);
+});
+
+app.get("/playsbo", function(req, res) {
+	res.sendFile(path.join(__dirname, "/public/game.html"));
 });
 
 app.get("/getportconnections", function(req, res) {

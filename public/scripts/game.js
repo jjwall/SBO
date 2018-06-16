@@ -4,12 +4,16 @@
 window.WebSocket = window.WebSocket || window.MozWebSocket;
 
 var connection;
-var currentPort = window.location.href.substring(30,34);
+var params = new URLSearchParams(window.location.search);
+var currentPort = parseInt(params.get("port"));
+var currentLoginUserId = params.get("loginUserId");
 
-connection = new WebSocket('ws://localhost:' + currentPort);
+if (currentPort != null && currentPort > 9000 && currentPort < 9051) { // -> need to have this same sort of check in the node app when spinning up servers
+    connection = new WebSocket("ws://" + window.location.hostname + ":" + currentPort);
 
-connection.onopen = function(event) {
-    connection.send('JavaScript client says: HEYOOOO from PORT ' + currentPort);
+    connection.onopen = function(event) {
+        connection.send('JavaScript client says: HEYOOOO from PORT ' + currentPort);
+    }
 }
 
 // function requestSocketToJoin() {

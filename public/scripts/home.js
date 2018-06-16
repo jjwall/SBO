@@ -7,7 +7,7 @@
 // update the portConnections struct with and then send back to client which will update room list accordingly
 // 3. Give dynamic "roomJoin" button functionality -> we will replace our dynamic routing to port system
 // by using URL params instead. That's what the dynamic join buttons will route players to
-// 4. ensure that static pages can be run WITHOUT being hosted on node. I.e. the script sourcing on
+// 4. (PRIORITIZE) ensure that static pages can be run WITHOUT being hosted on node. I.e. the script sourcing on
 // game.html needs to be scrapped entirely since we will no longer be using dynamic routes
 // -> this will also allow for easier game engine testing as we will not need to prop up node server and 
 // go through "game room lobby" in order to test changes. Can just run .exe from command line... and should
@@ -24,6 +24,12 @@ createRoomButton.onclick = function() {
     createRoom();
 }
 
+// -> this is the event that will send an ajax request to the Node app to spin up the "next" server in line
+// i.e. if servers, 9001, 9002, & 9003 are spun up already, then node app will need to spin up 9004 with the
+// next time a user triggers this event. Pretty much, the functionality from the GET request on dynamic
+// route "/playsbo:port" will be replaced with a POST request "/creategameroom" etc.
+// probably should replace all FETCH requests with XHR requests and check browser implementations of URLSearchParamss
+// but also might not be worth it...
 function createRoom() {
     // window.location.href = '/playsbo';
     console.log("Attempting to create a room...");
@@ -72,14 +78,6 @@ function populateRoomList() {
                 joinEvent(joinButtonElements[i], joinButtonElements[i].attributes[1].value);
             };
     });
-    // $('.roomJoin').each(function() {
-    //     $(this).on("click", function(event){
-    //         event.preventDefault();
-    //         var gameRoute = $(this).data('index');
-    //         window.location.href = '/' + gameRoute;
-    //         //console.log(gameNum);
-    //     });
-    // });
 }
 
 populateRoomList();
