@@ -18,6 +18,7 @@
 
 var createRoomButton = document.getElementById('createRoomButton');
 var gameRooms = document.getElementById('gameRooms');
+var currentLoginUserId = 100000 // -> will get dynamically through user auth eventually...
 
 createRoomButton.onclick = function() {
     createRoom();
@@ -26,6 +27,13 @@ createRoomButton.onclick = function() {
 function createRoom() {
     // window.location.href = '/playsbo';
     console.log("Attempting to create a room...");
+}
+
+var joinEvent = (element, port) => {
+    element.onclick = function() {
+        window.location.href = `/playsbo?port=${port}&loginUserId=${currentLoginUserId}`
+        console.log(port);
+    }
 }
 
 function populateRoomList() {
@@ -46,6 +54,7 @@ function populateRoomList() {
                     <th>Players</th>
                     <th>Join</th>
                 </tr>`;
+
             for (var key in availablePorts) {
                 var currentPort = key;
                 var players = availablePorts[key];
@@ -53,11 +62,16 @@ function populateRoomList() {
                     <tr>
                         <td>${currentPort}</td>
                         <td>(${players}/3)</td>
-                        <td><button class="roomJoin" data-index=${5}>Join</button></<td>
+                        <td><button class="roomJoin" data-port=${key}>Join</button></<td>
                     </tr>`
             }
-        });
-    
+
+            var joinButtonElements = document.getElementsByClassName('roomJoin');
+
+            for (var i = 0; i < joinButtonElements.length; i++) {
+                joinEvent(joinButtonElements[i], joinButtonElements[i].attributes[1].value);
+            };
+    });
     // $('.roomJoin').each(function() {
     //     $(this).on("click", function(event){
     //         event.preventDefault();
