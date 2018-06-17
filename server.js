@@ -67,9 +67,14 @@ app.get("/getportconnections", function(req, res) {
 });
 
 app.post("/creategameroom", function(req, res) {
+	console.log("this a post?");
+	console.log(req.body.Name);
+	// res.send({"5555": {"Name": "howdy", "players": 0}});
+	findOpenPort(req.body.Name, res);
 	// var routePort = req.params.port;
 	// requestConnections(routePort);
-	res.send(portConnectionsDict);
+	//res.send(portConnectionsDict);
+
 });
 
 // function findFirstAvailablePort() {
@@ -90,6 +95,29 @@ app.post("/creategameroom", function(req, res) {
 // 	}
 // 	console.log("All the game rooms are full :(");
 // }
+
+function findOpenPort(gameRoomName, response) {
+	var openPort = 9001;
+	var iterator = 0;
+
+	for (var key in portConnectionsDict) {
+		var potentialAvailablePort = openPort + iterator;
+		if (portConnectionsDict[potentialAvailablePort] === undefined) {
+			openPort = potentialAvailablePort;
+			break;
+		}
+		else if (portConnectionsDict[potentialAvailablePort + 1] === undefined) {
+			openPort = potentialAvailablePort + 1;
+			break;
+		}
+		iterator++;
+	}
+
+	spinUpWebSocketServer(openPort);
+	portConnectionsDict[openPort] = {"Name": gameRoomName, "Players": 0};
+	console.log(portConnectionsDict);
+	response.send(portConnectionsDict);
+}
 
 function spinUpWebSocketServer(port) {
 	var child = cp.spawn("./build_native/sbo.exe", [port]);

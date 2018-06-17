@@ -31,8 +31,22 @@ createRoomButton.onclick = function() {
 // probably should replace all FETCH requests with XHR requests and check browser implementations of URLSearchParamss
 // but also might not be worth it...
 function createRoom() {
-    // window.location.href = '/playsbo';
+    var url = window.location.href + 'creategameroom';
+
+    var data = {Name: "TestName"};
+
+    fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: new Headers({
+            'Content-Type': 'application/json'
+        })
+    })
+    .then(res => res.json())
+    .catch(error => console.log('Error:', error))
+    .then(response => console.log('Success:', response));
     console.log("Attempting to create a room...");
+    //populateRoomList();
 }
 
 var joinEvent = (element, port) => {
@@ -56,17 +70,18 @@ function populateRoomList() {
             console.log(availablePorts);
             gameRooms.innerHTML = `
                 <tr>
-                    <th>Port #</th>
+                    <th>Room Name</th>
                     <th>Players</th>
                     <th>Join</th>
                 </tr>`;
 
             for (var key in availablePorts) {
                 var currentPort = key;
-                var players = availablePorts[key];
+                var gameRoomName = availablePorts[key].Name;
+                var players = availablePorts[key].Players;
                 gameRooms.innerHTML += `
                     <tr>
-                        <td>${currentPort}</td>
+                        <td>${gameRoomName}: (Port: ${currentPort})</td>
                         <td>(${players}/3)</td>
                         <td><button class="roomJoin" data-port=${key}>Join</button></<td>
                     </tr>`
