@@ -25,6 +25,26 @@ wss.on('connection', function(connection) {
 	});
 });
 
+app.use(express.static('./public'));
+
+app.get("/", function(req, res) {
+	res.sendFile(path.join(__dirname, "/public/home.html"));
+});
+
+app.get("/playsbo", function(req, res) {
+	res.sendFile(path.join(__dirname, "/public/game.html"));
+});
+
+app.get("/getportconnections", function(req, res) {
+	// var routePort = req.params.port;
+	// requestConnections(routePort);
+	res.send(portConnectionsDict);
+});
+
+app.post("/creategameroom", function(req, res) {
+	findOpenPort(req.body.Name, res);
+});
+
 // check needs to be modified to only spin up game server if it isn't already running...
 function requestConnections(port) {
 	var portString = port.toString();
@@ -39,62 +59,6 @@ function requestConnections(port) {
 	}
 	console.log(portConnectionsDict);
 }
-
-app.use(express.static('./public'));
-
-app.get("/", function(req, res) {
-	res.sendFile(path.join(__dirname, "/public/home.html"));
-});
-
-// keeping this here for now to simply spin up servers through the URL...
-app.get("/playsbo/:port", function(req, res) {
-	var routePort = req.params.port;
-	requestConnections(routePort);
-	res.sendFile(path.join(__dirname, "/public/game.html"));
-	// findFirstAvailablePort();
-	// console.log("Port Connections:");
-	// console.log(portConnections);
-});
-
-app.get("/playsbo", function(req, res) {
-	res.sendFile(path.join(__dirname, "/public/game.html"));
-});
-
-app.get("/getportconnections", function(req, res) {
-	// var routePort = req.params.port;
-	// requestConnections(routePort);
-	res.send(portConnectionsDict);
-});
-
-app.post("/creategameroom", function(req, res) {
-	console.log("this a post?");
-	console.log(req.body.Name);
-	// res.send({"5555": {"Name": "howdy", "players": 0}});
-	findOpenPort(req.body.Name, res);
-	// var routePort = req.params.port;
-	// requestConnections(routePort);
-	//res.send(portConnectionsDict);
-
-});
-
-// function findFirstAvailablePort() {
-// 	for (var i = 0; i < portConnections.length; i++) {
-// 		var currentPort = (i + 9001).toString();
-// 		if (portConnections[i][currentPort].length > 3) {
-// 			continue;
-// 		}
-// 		if (portConnections[i][currentPort].length === 0) {
-// 			spinUpWebSocketServer(currentPort);
-// 			portConnections[i][currentPort].push(true); // push socket connection not a bool
-// 			return;
-// 		}
-// 		if (portConnections[i][currentPort].length > 0 && portConnections[i][currentPort].length < 3) {
-// 			portConnections[i][currentPort].push(true); // push socket connection not a bool
-// 			return;
-// 		}
-// 	}
-// 	console.log("All the game rooms are full :(");
-// }
 
 function findOpenPort(gameRoomName, response) {
 	var openPort = 9001;
