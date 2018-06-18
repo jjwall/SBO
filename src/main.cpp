@@ -3,11 +3,13 @@
 #include <websocketpp/server.hpp>
 #include <websocketpp/config/asio_no_tls_client.hpp>
 #include <websocketpp/client.hpp>
+#include <nlohmann/json.hpp>
 
 using websocketpp::connection_hdl;
 using websocketpp::lib::placeholders::_1;
 using websocketpp::lib::placeholders::_2;
 using websocketpp::lib::bind;
+using json = nlohmann::json;
 
 typedef websocketpp::config::asio_client::message_type::ptr message_ptr;
 typedef websocketpp::client<websocketpp::config::asio_client> client;
@@ -25,10 +27,12 @@ public:
     static void on_message(connection_hdl, server::message_ptr msg) {
         std::cout << msg->get_payload() << std::endl;
     }
+
     static void on_open(connection_hdl hdl) {
         connections++;
         std::cout << "We gained a connection: now we have " << connections << std::endl;
     }
+
     static void on_close(connection_hdl hdl) {
         connections--;
         std::cout << "We lost a connection: now we have " << connections << std::endl;
@@ -36,6 +40,10 @@ public:
 
     static int get_port() {
         return port;
+    }
+
+    static int get_connections() {
+        return connections;
     }
 
 private:
@@ -46,9 +54,22 @@ private:
 
 class game_client {
 public:
+    static void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
+        c->get_alog().write(websocketpp::log::alevel::app, "Received Reply: "+msg->get_payload());
+        if (msg->get_payload() == "get connections") {
+            json j;
+            j[std::to_string(game_server::get_port())] = game_server::get_connections();
+            std::cout << "get those DANG connections!!" << std::endl;
+            std::cout << j << std::endl;
+            std::string sendMsg = j.dump();
+            c->send(hdl,sendMsg,websocketpp::frame::opcode::text);
+        }
+        // c->close(hdl,websocketpp::close::status::normal,"");
+    }
+
     static void on_open(client* c, connection_hdl hdl) {
-        std::string msg = "Hi from the C++!";
-        c->send(hdl,msg,websocketpp::frame::opcode::text);
+        // std::string msg = "Hi from the C++!";
+        // c->send(hdl,msg,websocketpp::frame::opcode::text);
         //c->close(hdl, websocketpp::close::status::normal,"");
         //c->get_alog().write(websocketpp::log::alevel::app, "Sent Message: "+msg);
     }
@@ -89,7 +110,7 @@ int main(int argc, char* argv[]) {
         c.init_asio();
 
         // Register our message handler
-        //c.set_message_handler(bind(&on_message,&c,::_1,::_2));
+        c.set_message_handler(bind(&game_client::on_message,&c,::_1,::_2));
 
         websocketpp::lib::error_code ec;
         client::connection_ptr con = c.get_connection(uri, ec);

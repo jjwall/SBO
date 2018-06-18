@@ -8,6 +8,7 @@ target_link_libraries(sbo
     boost_system-mt
     wsock32)
 target_include_directories(sbo PUBLIC
-    src/websocketpp)
+    src/websocketpp
+    src/nlohmann)
 set_target_properties(sbo
     PROPERTIES CXX_STANDARD 17)

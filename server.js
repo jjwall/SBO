@@ -1,5 +1,3 @@
-// Need to clean up unneeded GET requests here
-
 var express = require('express');
 var path = require('path');
 var cp = require('child_process');
@@ -21,7 +19,12 @@ var portConnectionsDict = {};
 wss.on('connection', function(connection) {
 	console.log("Node app is connected to new instance C++ server.");
 	connection.on('message', function(message) {
-		console.log("Node server says: " + message);
+		console.log("Node server says: ");
+		var currentConnectionInfo = JSON.parse(message);
+		var currentPort = Object.getOwnPropertyNames(currentConnectionInfo);
+		var numberOfPlayers = currentConnectionInfo[currentPort];
+		portConnectionsDict[currentPort]["Players"] = numberOfPlayers;
+		console.log(portConnectionsDict);
 	});
 });
 
@@ -36,28 +39,19 @@ app.get("/playsbo", function(req, res) {
 });
 
 app.get("/getportconnections", function(req, res) {
-	// var routePort = req.params.port;
-	// requestConnections(routePort);
-	res.send(portConnectionsDict);
+	requestConnections(res);
 });
 
 app.post("/creategameroom", function(req, res) {
 	findOpenPort(req.body.Name, res);
 });
 
-// check needs to be modified to only spin up game server if it isn't already running...
-function requestConnections(port) {
-	var portString = port.toString();
-	if (wss.clients.length === 0 || wss.clients.length == undefined) {
-		portConnectionsDict[portString] = 1;
-		spinUpWebSocketServer(portString);
-	}
-	else {
-		wss.clients.forEach(client => {
-			client.send("get connections");
-		});
-	}
-	console.log(portConnectionsDict);
+function requestConnections(response) {
+	wss.clients.forEach(client => {
+		client.send("get connections");
+	});
+	// need to resolve a promise here before sending response
+	response.send(portConnectionsDict);
 }
 
 function findOpenPort(gameRoomName, response) {
@@ -80,7 +74,8 @@ function findOpenPort(gameRoomName, response) {
 	spinUpWebSocketServer(openPort);
 	portConnectionsDict[openPort] = {"Name": gameRoomName, "Players": 0};
 	console.log(portConnectionsDict);
-	response.send(portConnectionsDict);
+	requestConnections(response);
+	//response.send(portConnectionsDict);
 }
 
 function spinUpWebSocketServer(port) {
