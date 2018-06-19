@@ -7,12 +7,12 @@
 // update the portConnections struct with and then send back to client which will update room list accordingly
 // 3. (done) Give dynamic "roomJoin" button functionality -> we will replace our dynamic routing to port system
 // by using URL params instead. That's what the dynamic join buttons will route players to
-// 4. (PRIORITIZE) ensure that static pages can be run WITHOUT being hosted on node. I.e. the script sourcing on
+// 4. (done) ensure that static pages can be run WITHOUT being hosted on node. I.e. the script sourcing on
 // game.html needs to be scrapped entirely since we will no longer be using dynamic routes - not sure how
 // to connect to socket straight from a file path
 // -> this will also allow for easier game engine testing as we will not need to prop up node server and 
 // go through "game room lobby" in order to test changes. Can just run .exe from command line... and should
-// 5. Set up promise for getting connections / room list
+// 5. (done) Set up promise for getting connections / room list
 // be able to ignore the .exe client connection errors...
 // 6. Set up TypeScript
 // 7. Set up Pixi.js and get Type Declarations for it
