@@ -21,6 +21,7 @@
 var createRoomButton = document.getElementById('createRoomButton');
 var gameRooms = document.getElementById('gameRooms');
 var roomNameInput = document.getElementById('roomNameInput');
+var createRoomText = document.getElementById('createRoomText');
 var currentLoginUserId = 100000 // -> will get dynamically through user auth eventually...
 
 createRoomButton.onclick = function() {
@@ -41,8 +42,11 @@ function createRoom() {
         return alert("Room Name field must have a value.");
     }
 
-    var url = window.location.href + 'creategameroom';
+    createRoomButton.disabled = true;
+    roomNameInput.disabled = true;
+    createRoomText.innerHTML = 'Creating Room...';
 
+    var url = window.location.href + 'creategameroom';
     var data = {Name: roomNameInput.value};
 
     fetch(url, {
@@ -53,13 +57,16 @@ function createRoom() {
         })
     })
     .then(function(response) {
+        console.log("creating game room...")
         return response.json();
     })
     .catch(function(error) {
         console.log('Error: ' + error);
     })
     .then(function(ports) {
-        alert("Room created successfully!");
+        createRoomButton.disabled = false;
+        roomNameInput.disabled = false;
+        createRoomText.innerHTML = 'Room created successfully!';
         populateRoomList(ports);
     });
 }

@@ -15,16 +15,34 @@ var wss = new WebSocket.Server({ server });
 app.use(bodyParser.json());
 
 var portConnectionsDict = {};
+var pendingRequestsDict = {};
 
 wss.on('connection', function(connection) {
-	console.log("Node app is connected to new instance C++ server.");
+	console.log("Node app is connected to new instance of a C++ server.");
+
+	// ping all game servers so we can resolve the requests set up by "/creategameroom" POST
+	requestConnections();
+
+	// listens for connection info from game servers. game servers will send a dictionary
+	// with a single value in the form of { portNumber: numberOfConnections }
 	connection.on('message', function(message) {
-		console.log("Node server says: ");
 		var currentConnectionInfo = JSON.parse(message);
 		var currentPort = Object.getOwnPropertyNames(currentConnectionInfo);
 		var numberOfPlayers = currentConnectionInfo[currentPort];
+
+		// update port connection struct with new connection info
 		portConnectionsDict[currentPort]["Players"] = numberOfPlayers;
-		console.log(portConnectionsDict);
+
+		for (var key in pendingRequestsDict) {
+			// if key equals current port, then resolve request from "/creategameroom" POST
+			// if beginning of key is "getconns", then resolve request from "/getportconnections" GET
+			if (key == currentPort || key.substring(0, 8) == "getconns") {
+				// resolve request
+				pendingRequestsDict[key]();
+				// delete value as request is no longer pending
+				delete pendingRequestsDict[key];
+			}
+		}
 	});
 });
 
@@ -39,19 +57,30 @@ app.get("/playsbo", function(req, res) {
 });
 
 app.get("/getportconnections", function(req, res) {
-	requestConnections(res);
+	// ping all servers so our request can be resolved
+	requestConnections();
+	
+	var uniqueClientInfo = req.headers['user-agent'];
+
+	if (isEmpty(portConnectionsDict)) {
+		res.send(portConnectionsDict);
+	}
+	else {
+		pendingRequestsDict["getconns-" + uniqueClientInfo] = function() {
+			res.send(portConnectionsDict);
+		}
+		console.log(pendingRequestsDict);
+	}
 });
 
 app.post("/creategameroom", function(req, res) {
 	findOpenPort(req.body.Name, res);
 });
 
-function requestConnections(response) {
+function requestConnections() {
 	wss.clients.forEach(client => {
 		client.send("get connections");
 	});
-	// need to resolve a promise here before sending response
-	response.send(portConnectionsDict);
 }
 
 function findOpenPort(gameRoomName, response) {
@@ -71,11 +100,13 @@ function findOpenPort(gameRoomName, response) {
 		iterator++;
 	}
 
-	spinUpWebSocketServer(openPort);
 	portConnectionsDict[openPort] = {"Name": gameRoomName, "Players": 0};
-	console.log(portConnectionsDict);
-	requestConnections(response);
-	//response.send(portConnectionsDict);
+
+	pendingRequestsDict[openPort] = function() {
+		response.send(portConnectionsDict);
+	}
+
+	spinUpWebSocketServer(openPort);
 }
 
 function spinUpWebSocketServer(port) {
@@ -83,6 +114,14 @@ function spinUpWebSocketServer(port) {
 	child.stdout.on('data', function(data) {
 		console.log(data.toString());
 	});
+}
+
+function isEmpty(obj) {
+    for(var key in obj) {
+        if(obj.hasOwnProperty(key))
+            return false;
+    }
+    return true;
 }
 
 server.listen(PORT, function () {
