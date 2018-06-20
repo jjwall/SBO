@@ -1,10 +1,14 @@
 #include <iostream>
+#include <stdexcept>
+#include <thread>
+#include <chrono>
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
 #include <websocketpp/config/asio_no_tls_client.hpp>
 #include <websocketpp/client.hpp>
 #include <nlohmann/json.hpp>
 
+using namespace std::literals;
 using websocketpp::connection_hdl;
 using websocketpp::lib::placeholders::_1;
 using websocketpp::lib::placeholders::_2;
@@ -128,8 +132,9 @@ int main(int argc, char* argv[]) {
 
         // start polling both client and server
         while (true) {
-            c.poll();
             websocket_server.poll();
+            c.poll();
+            std::this_thread::sleep_for(0ms);
         }
     }
     catch (websocketpp::exception const & e) {

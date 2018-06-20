@@ -16,6 +16,7 @@ app.use(bodyParser.json());
 
 var portConnectionsDict = {};
 var pendingRequestsDict = {};
+var getConnsArray = [];
 
 wss.on('connection', function(connection) {
 	console.log("Node app is connected to new instance of a C++ server.");
@@ -34,14 +35,18 @@ wss.on('connection', function(connection) {
 		portConnectionsDict[currentPort]["Players"] = numberOfPlayers;
 
 		for (var key in pendingRequestsDict) {
-			// if key equals current port, then resolve request from "/creategameroom" POST
-			// if beginning of key is "getconns", then resolve request from "/getportconnections" GET
-			if (key == currentPort || key.substring(0, 8) == "getconns") {
-				// resolve request
-				pendingRequestsDict[key]();
-				// delete value as request is no longer pending
-				delete pendingRequestsDict[key];
-			}
+			// resolve request
+			pendingRequestsDict[key]();
+			// delete value as request is no longer pending
+			delete pendingRequestsDict[key];
+		}
+
+		// iterate through getConnsArray and resolve each request
+		for (var i = 0; i < getConnsArray.length; i++) {
+			// resolve request
+			getConnsArray[i]();
+			// delete value at index i as request has been resolved
+			getConnsArray.splice(i, 1);
 		}
 	});
 });
@@ -59,17 +64,15 @@ app.get("/playsbo", function(req, res) {
 app.get("/getportconnections", function(req, res) {
 	// ping all servers so our request can be resolved
 	requestConnections();
-	
-	var uniqueClientInfo = req.headers['user-agent'];
 
 	if (isEmpty(portConnectionsDict)) {
 		res.send(portConnectionsDict);
 	}
 	else {
-		pendingRequestsDict["getconns-" + uniqueClientInfo] = function() {
+		// push response param onto getConnsArray
+		getConnsArray.push(function(){
 			res.send(portConnectionsDict);
-		}
-		console.log(pendingRequestsDict);
+		});
 	}
 });
 
@@ -89,6 +92,7 @@ function findOpenPort(gameRoomName, response) {
 
 	for (var key in portConnectionsDict) {
 		var potentialAvailablePort = openPort + iterator;
+		
 		if (portConnectionsDict[potentialAvailablePort] === undefined) {
 			openPort = potentialAvailablePort;
 			break;
