@@ -134,7 +134,7 @@ int main(int argc, char* argv[]) {
         while (true) {
             websocket_server.poll();
             c.poll();
-            std::this_thread::sleep_for(0ms);
+            std::this_thread::sleep_for(20ms);
         }
     }
     catch (websocketpp::exception const & e) {
