@@ -44,6 +44,13 @@ public:
         std::cout << "We lost a connection: now we have " << connections << std::endl;
     }
 
+    static void broadcast(server* s, json msg) {
+        std::string msg_string = msg.dump();
+        for (int i = 0; i < connected_players.size(); i++) {
+            s->send(connected_players[i], msg_string, websocketpp::frame::opcode::text);
+        }
+    }
+
     static int get_port() {
         return port;
     }
@@ -52,26 +59,16 @@ public:
         return connections;
     }
 
-    // static std::vector<connection_hdl> get_connected_players(int index) {
-    //     return connected_players[index];
-    // }
-
-    // static int get_number_of_players() {
-    //     return connected_players.size();
-    // }
-
-    static std::vector<connection_hdl> connected_players;
-
 private:
     static bool initialized;
     static int port;
     static int connections;
-    // static std::vector<connection_hdl> connected_players;
+    static std::vector<connection_hdl> connected_players;
 };
 
 class game_client {
 public:
-    static void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
+    static void on_message(client* c, connection_hdl hdl, message_ptr msg) {
         c->get_alog().write(websocketpp::log::alevel::app, "Received Reply: "+msg->get_payload());
         if (msg->get_payload() == "get connections") {
             json j;
@@ -98,8 +95,8 @@ int game_server::connections;
 std::vector<connection_hdl> game_server::connected_players;
 
 int main(int argc, char* argv[]) {
-    server websocket_server;
-    client c;
+    server websocket_server; // -> combine websocket_server with game_server
+    client c; // -> combine c with game_client
 
     game_server::init(std::atoi(argv[1]));
 
@@ -145,14 +142,13 @@ int main(int argc, char* argv[]) {
         // con->send("hey from c++", websocketpp::frame::opcode::text);
 
         json test_blob;
-        test_blob["eventTypeTest"]["eventTypeSpecifics"] = {{"player", 1}, {"posX", 5}, {"posY", 3}};
-        std::string test_msg = test_blob.dump();
+        test_blob["eventType"] = "eventTypeTest";
+        test_blob["eventSubType"] = "eventSpecifics";
+        test_blob["eventData"] = {{"player", 1}, {"posX", 5}, {"posY", 3}};
 
         // start polling both client and server
         while (true) {
-            for (int i = 0; i < game_server::connected_players.size(); i++) {
-                websocket_server.send(game_server::connected_players[i], test_msg, websocketpp::frame::opcode::text);
-            }
+            game_server::broadcast(&websocket_server, test_blob);
 
             websocket_server.poll();
             c.poll();
