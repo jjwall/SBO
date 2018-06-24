@@ -8,10 +8,8 @@ if (currentPort != null) {
     connection.onopen = function (event) {
         connection.send('JavaScript client says: HEYOOOO from PORT ' + currentPort);
     };
-}
-function onConnect() {
-    connection.onopen = function (event) {
-        connection.send('JavaScript client says: HEYOOOO from PORT ' + currentPort);
+    connection.onmessage = function (message) {
+        console.log(message);
     };
 }
 //# sourceMappingURL=main.js.map

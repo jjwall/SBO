@@ -13,14 +13,14 @@ if (currentPort != null) {// && currentPort > 9000 && currentPort < 9051) { // -
     connection.onopen = function(event):void {
         connection.send('JavaScript client says: HEYOOOO from PORT ' + currentPort);
     }
-}
 
-// // connection.onmessage = function(message) {
-// //     console.log(message);
-// // }
-
-function onConnect() {
-    connection.onopen = function(event):void {
-        connection.send('JavaScript client says: HEYOOOO from PORT ' + currentPort);
+    connection.onmessage = function(message) {
+        console.log(message);
     }
 }
+
+// function onConnect() {
+//     connection.onopen = function(event):void {
+//         connection.send('JavaScript client says: HEYOOOO from PORT ' + currentPort);
+//     }
+// }

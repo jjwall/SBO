@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <thread>
 #include <chrono>
+#include <vector>
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
 #include <websocketpp/config/asio_no_tls_client.hpp>
@@ -35,6 +36,7 @@ public:
     static void on_open(connection_hdl hdl) {
         connections++;
         std::cout << "We gained a connection: now we have " << connections << std::endl;
+        connected_players.push_back(hdl);
     }
 
     static void on_close(connection_hdl hdl) {
@@ -50,10 +52,21 @@ public:
         return connections;
     }
 
+    // static std::vector<connection_hdl> get_connected_players(int index) {
+    //     return connected_players[index];
+    // }
+
+    // static int get_number_of_players() {
+    //     return connected_players.size();
+    // }
+
+    static std::vector<connection_hdl> connected_players;
+
 private:
     static bool initialized;
     static int port;
     static int connections;
+    // static std::vector<connection_hdl> connected_players;
 };
 
 class game_client {
@@ -64,7 +77,7 @@ public:
             json j;
             j[std::to_string(game_server::get_port())] = game_server::get_connections();
             std::cout << "get those DANG connections!!" << std::endl;
-            std::cout << j << std::endl;
+            // std::cout << j << std::endl;
             std::string sendMsg = j.dump();
             c->send(hdl,sendMsg,websocketpp::frame::opcode::text);
         }
@@ -82,6 +95,7 @@ public:
 bool game_server::initialized = false;
 int game_server::port;
 int game_server::connections;
+std::vector<connection_hdl> game_server::connected_players;
 
 int main(int argc, char* argv[]) {
     server websocket_server;
@@ -130,8 +144,16 @@ int main(int argc, char* argv[]) {
 
         // con->send("hey from c++", websocketpp::frame::opcode::text);
 
+        json test_blob;
+        test_blob["eventTypeTest"]["eventTypeSpecifics"] = {{"player", 1}, {"posX", 5}, {"posY", 3}};
+        std::string test_msg = test_blob.dump();
+
         // start polling both client and server
         while (true) {
+            for (int i = 0; i < game_server::connected_players.size(); i++) {
+                websocket_server.send(game_server::connected_players[i], test_msg, websocketpp::frame::opcode::text);
+            }
+
             websocket_server.poll();
             c.poll();
             std::this_thread::sleep_for(20ms);
