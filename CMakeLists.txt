@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 project(SBO)
 
 add_executable(sbo
-    src/main.cpp)
+    src/main.cpp
+    src/game_server.cpp)
 target_link_libraries(sbo
     ws2_32
     boost_system-mt

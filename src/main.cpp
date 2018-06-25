@@ -1,3 +1,4 @@
+#include "game_server.hpp"
 #include <iostream>
 #include <stdexcept>
 #include <thread>
@@ -19,52 +20,6 @@ using json = nlohmann::json;
 typedef websocketpp::config::asio_client::message_type::ptr message_ptr;
 typedef websocketpp::client<websocketpp::config::asio_client> client;
 typedef websocketpp::server<websocketpp::config::asio> server;
-
-class game_server {
-public:
-    static void init(int p) {
-        if (initialized) throw std::runtime_error("DON'T TRY AND RE-INIT");
-        initialized = true;
-        port = p;
-        connections = 0;
-    }
-
-    static void on_message(connection_hdl, server::message_ptr msg) {
-        std::cout << msg->get_payload() << std::endl;
-    }
-
-    static void on_open(connection_hdl hdl) {
-        connections++;
-        std::cout << "We gained a connection: now we have " << connections << std::endl;
-        connected_players.push_back(hdl);
-    }
-
-    static void on_close(connection_hdl hdl) {
-        connections--;
-        std::cout << "We lost a connection: now we have " << connections << std::endl;
-    }
-
-    static void broadcast(server* s, json msg) {
-        std::string msg_string = msg.dump();
-        for (int i = 0; i < connected_players.size(); i++) {
-            s->send(connected_players[i], msg_string, websocketpp::frame::opcode::text);
-        }
-    }
-
-    static int get_port() {
-        return port;
-    }
-
-    static int get_connections() {
-        return connections;
-    }
-
-private:
-    static bool initialized;
-    static int port;
-    static int connections;
-    static std::vector<connection_hdl> connected_players;
-};
 
 class game_client {
 public:
@@ -91,24 +46,23 @@ public:
 
 bool game_server::initialized = false;
 int game_server::port;
-int game_server::connections;
-std::vector<connection_hdl> game_server::connected_players;
+std::vector<server::connection_ptr> game_server::connection_list;
+server game_server::websocket;
 
 int main(int argc, char* argv[]) {
-    server websocket_server; // -> combine websocket_server with game_server
     client c; // -> combine c with game_client
 
     game_server::init(std::atoi(argv[1]));
 
-    websocket_server.set_message_handler(&game_server::on_message);
-    websocket_server.set_open_handler(&game_server::on_open);
-    websocket_server.set_close_handler(&game_server::on_close);
-    websocket_server.set_access_channels(websocketpp::log::alevel::all);
-    websocket_server.set_error_channels(websocketpp::log::elevel::all);
+    game_server::websocket.set_message_handler(&game_server::on_message);
+    game_server::websocket.set_open_handler(&game_server::on_open);
+    game_server::websocket.set_close_handler(&game_server::on_close);
+    game_server::websocket.set_access_channels(websocketpp::log::alevel::all);
+    game_server::websocket.set_error_channels(websocketpp::log::elevel::all);
 
-    websocket_server.init_asio();
-    websocket_server.listen(game_server::get_port());
-    websocket_server.start_accept();
+    game_server::websocket.init_asio();
+    game_server::websocket.listen(game_server::get_port());
+    game_server::websocket.start_accept();
 
     std::cout << "Listening for connections on port " << game_server::get_port() << std::endl;
 
@@ -148,9 +102,9 @@ int main(int argc, char* argv[]) {
 
         // start polling both client and server
         while (true) {
-            game_server::broadcast(&websocket_server, test_blob);
+            // game_server::broadcast(&game_server::websocket, test_blob);
 
-            websocket_server.poll();
+            game_server::websocket.poll();
             c.poll();
             std::this_thread::sleep_for(20ms);
         }

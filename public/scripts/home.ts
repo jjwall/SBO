@@ -14,10 +14,15 @@
 // go through "game room lobby" in order to test changes. Can just run .exe from command line... and should
 // 5. (done) Set up promise for getting connections / room list
 // be able to ignore the .exe client connection errors...
-// 6. Set up TypeScript
-// 7. Set up communcation layer between C++ and TypeScript
+// 6. (done) Set up TypeScript
+// 7. (done) Set up communcation layer: C++ sending messages to TypeScript
+// 8. Set up communication layer: TypeScript sending messages to C++
+// 9. Set up entity class in C++ that registers connection handlers and stores player index
+// -> this player index will be crucial, it will be the index that client game state uses to update data for all connected players
+// --> it will also be used as a deciding factor to init an entity class as a player logs on
+// i.e. if 3 players max can play, the 4th player that logs on won't have an instance of the entity class for them
+// furthermore, player index will need to be dynamic as players disconnect
 // 8. Set up Pixi.js and get Type Declarations for it
-// 9. Begin working on engine...
 
 var createRoomButton = <HTMLButtonElement>document.getElementById('createRoomButton');
 var gameRooms = <HTMLElement>document.getElementById('gameRooms');
