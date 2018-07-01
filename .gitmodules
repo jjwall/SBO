@@ -1,0 +1,9 @@
+[submodule "ext/websocketpp"]
+	path = ext/websocketpp
+	url = https://github.com/zaphoyd/websocketpp
+[submodule "ext/nlohmann"]
+	path = ext/nlohmann
+	url = https://github.com/nlohmann/json
+[submodule "ext/pixijs"]
+	path = ext/pixijs
+	url = https://github.com/pixijs/pixi.js
