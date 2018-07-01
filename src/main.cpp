@@ -1,7 +1,6 @@
 #include "game_server.hpp"
 #include "game_client.hpp"
 #include <iostream>
-#include <stdexcept>
 #include <thread>
 #include <chrono>
 #include <vector>

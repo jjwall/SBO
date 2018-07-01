@@ -24,36 +24,32 @@
 // furthermore, player index will need to be dynamic as players disconnect
 // 8. Set up Pixi.js and get Type Declarations for it
 
-var createRoomButton = <HTMLButtonElement>document.getElementById('createRoomButton');
-var gameRooms = <HTMLElement>document.getElementById('gameRooms');
-var roomNameInput = <HTMLButtonElement>document.getElementById('roomNameInput');
-var createRoomText = <HTMLElement>document.getElementById('createRoomText');
-var currentLoginUserId = <number>100000; // -> will get dynamically through user auth eventually...
-
-createRoomButton.onclick = function():void {
-    createRoom();
+// global home variable
+var gh = {
+    createRoomButton: <HTMLButtonElement>document.getElementById('createRoomButton'),
+    gameRooms: <HTMLElement>document.getElementById('gameRooms'),
+    roomNameInput: <HTMLButtonElement>document.getElementById('roomNameInput'),
+    createRoomText: <HTMLElement>document.getElementById('createRoomText'),
+    currentLoginUserId: <number>100000 // -> will get dynamically through user auth eventually...
 }
 
-function isNullOrWhitespace(input):boolean {
-    if (typeof input === 'undefined' || input == null) {
-        return true;
-    }
-    return input.replace(/\s/g, '').length < 1;
+gh.createRoomButton.onclick = function():void {
+    createRoom();
 }
 
 // probably should replace all FETCH requests with XHR requests and check browser implementations of URLSearchParamss
 // but also might not be worth it...
 function createRoom():void {
-    if (isNullOrWhitespace(roomNameInput.value)) {
+    if (isNullOrWhitespace(gh.roomNameInput.value)) {
         return alert("Room Name field must have a value.");
     }
 
-    createRoomButton.disabled = true;
-    roomNameInput.disabled = true;
-    createRoomText.innerHTML = 'Creating Room...';
+    gh.createRoomButton.disabled = true;
+    gh.roomNameInput.disabled = true;
+    gh.createRoomText.innerHTML = 'Creating Room...';
 
     var url = <string>window.location.href + 'creategameroom';
-    var data = <object>{Name: roomNameInput.value};
+    var data = <object>{Name: gh.roomNameInput.value};
 
     fetch(url, {
         method: 'POST',
@@ -70,16 +66,16 @@ function createRoom():void {
         console.log('Error: ' + error);
     })
     .then(function(ports:JSON):void {
-        createRoomButton.disabled = false;
-        roomNameInput.disabled = false;
-        createRoomText.innerHTML = 'Room created successfully!';
+        gh.createRoomButton.disabled = false;
+        gh.roomNameInput.disabled = false;
+        gh.createRoomText.innerHTML = 'Room created successfully!';
         populateRoomList(ports);
     });
 }
 
 var joinEvent = (element:HTMLElement, port:String):void => {
     element.onclick = function() {
-        window.location.href = `/playsbo?port=${port}&loginUserId=${currentLoginUserId}`
+        window.location.href = `/playsbo?port=${port}&loginUserId=${gh.currentLoginUserId}`
         console.log(port);
     }
 }
@@ -101,7 +97,7 @@ function getRoomList():void {
 }
 
 function populateRoomList(portsDict:JSON):void {
-    gameRooms.innerHTML = `
+    gh.gameRooms.innerHTML = `
     <tr>
         <th>Room Name</th>
         <th>Players</th>
@@ -112,7 +108,7 @@ function populateRoomList(portsDict:JSON):void {
         var currentPort = <string>key;
         var gameRoomName = <string>portsDict[key].Name;
         var players = <number>portsDict[key].Players;
-        gameRooms.innerHTML += `
+        gh.gameRooms.innerHTML += `
             <tr>
                 <td>${gameRoomName}: (Port: ${currentPort})</td>
                 <td>(${players}/3)</td>
@@ -125,6 +121,13 @@ function populateRoomList(portsDict:JSON):void {
     for (var i = 0; i < joinButtonElements.length; i++) {
         joinEvent(joinButtonElements[i], joinButtonElements[i].attributes[1].value);
     };
+}
+
+function isNullOrWhitespace(input):boolean {
+    if (typeof input === 'undefined' || input == null) {
+        return true;
+    }
+    return input.replace(/\s/g, '').length < 1;
 }
 
 getRoomList();

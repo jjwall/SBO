@@ -1,14 +1,15 @@
-var connection;
-var params = new URLSearchParams(window.location.search);
-var currentPort = parseInt(params.get("port"));
-var currentLoginUserId = parseInt(params.get("loginUserId"));
-var hostName = window.location.hostname != "" ? window.location.hostname : "localhost";
-if (currentPort != null) {
-    connection = new WebSocket("ws://" + hostName + ":" + currentPort);
-    connection.onopen = function (event) {
-        connection.send('JavaScript client says: HEYOOOO from PORT ' + currentPort);
+var params = new URLSearchParams(window.location.search), g = {
+    connection: null,
+    currentPort: parseInt(params.get("port")),
+    currentLoginUserId: parseInt(params.get("loginUserId")),
+    hostName: window.location.hostname != "" ? window.location.hostname : "localhost"
+};
+if (g.currentPort != null) {
+    g.connection = new WebSocket("ws://" + g.hostName + ":" + g.currentPort);
+    g.connection.onopen = function (event) {
+        g.connection.send('JavaScript client says: HEYOOOO from PORT ' + g.currentPort);
     };
-    connection.onmessage = function (message) {
+    g.connection.onmessage = function (message) {
         var jsonEvent = JSON.parse(message.data);
         var eventTypeName = jsonEvent["eventType"];
         switch (eventTypeName) {
