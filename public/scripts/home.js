@@ -61,7 +61,7 @@ function populateRoomList(portsDict) {
     for (var key in portsDict) {
         var currentPort = key;
         var gameRoomName = portsDict[key].Name;
-        var players = portsDict[key].Players;
+        var players = portsDict[key].Connections;
         gh.gameRooms.innerHTML += "\n            <tr>\n                <td>" + gameRoomName + ": (Port: " + currentPort + ")</td>\n                <td>(" + players + "/3)</td>\n                <td><button class=\"roomJoin\" data-port=" + key + ">Join</button></<td>\n            </tr>";
     }
     var joinButtonElements = document.getElementsByClassName('roomJoin');

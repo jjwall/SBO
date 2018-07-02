@@ -107,7 +107,7 @@ function populateRoomList(portsDict:JSON):void {
     for (var key in portsDict) {
         var currentPort = <string>key;
         var gameRoomName = <string>portsDict[key].Name;
-        var players = <number>portsDict[key].Players;
+        var players = <number>portsDict[key].Connections;
         gh.gameRooms.innerHTML += `
             <tr>
                 <td>${gameRoomName}: (Port: ${currentPort})</td>

@@ -24,15 +24,14 @@ wss.on('connection', function(connection) {
 	// ping all game servers so we can resolve the requests set up by "/creategameroom" POST
 	requestConnections();
 
-	// listens for connection info from game servers. game servers will send a dictionary
-	// with a single value in the form of { portNumber: numberOfConnections }
+	// listens for connection info from game servers
 	connection.on('message', function(message) {
-		var currentConnectionInfo = JSON.parse(message);
-		var currentPort = Object.getOwnPropertyNames(currentConnectionInfo);
-		var numberOfPlayers = currentConnectionInfo[currentPort];
+		var currentGameServerInfo = JSON.parse(message);
+		var currentPort = currentGameServerInfo["port"];
+		var numberOfConnections = currentGameServerInfo["connections"];
 
 		// update port connection struct with new connection info
-		portConnectionsDict[currentPort]["Players"] = numberOfPlayers;
+		portConnectionsDict[currentPort]["Connections"] = numberOfConnections;
 
 		for (var key in pendingRequestsDict) {
 			// resolve request
@@ -104,7 +103,7 @@ function findOpenPort(gameRoomName, response) {
 		iterator++;
 	}
 
-	portConnectionsDict[openPort] = {"Name": gameRoomName, "Players": 0};
+	portConnectionsDict[openPort] = {"Name": gameRoomName, "Connections": 0};
 
 	pendingRequestsDict[openPort] = function() {
 		response.send(portConnectionsDict);
