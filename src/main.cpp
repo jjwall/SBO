@@ -1,3 +1,4 @@
+#include "game.hpp"
 #include "game_server.hpp"
 #include "game_client.hpp"
 #include <iostream>
@@ -22,6 +23,7 @@ int game_server::port;
 std::vector<server::connection_ptr> game_server::connection_list;
 server game_server::websocket;
 client game_client::c;
+std::vector<entity> game::entity_list;
 
 int main(int argc, char* argv[]) {
     game_server::init(std::atoi(argv[1]));

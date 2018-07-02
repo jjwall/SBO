@@ -16,13 +16,15 @@
 // be able to ignore the .exe client connection errors...
 // 6. (done) Set up TypeScript
 // 7. (done) Set up communcation layer: C++ sending messages to TypeScript
-// 8. Set up communication layer: TypeScript sending messages to C++
+// 8. (done) Set up communication layer: TypeScript sending messages to C++
 // 9. Set up entity class in C++ that registers connection handlers and stores player index
 // -> this player index will be crucial, it will be the index that client game state uses to update data for all connected players
 // --> it will also be used as a deciding factor to init an entity class as a player logs on
 // i.e. if 3 players max can play, the 4th player that logs on won't have an instance of the entity class for them
 // furthermore, player index will need to be dynamic as players disconnect
-// 8. Set up Pixi.js and get Type Declarations for it
+// 10. Set up hash table with connection_hdl as keys, entity players objects as values
+// -> or just keep them in a list and run a for (auto& player : players) {} on them
+// 11. Set up Pixi.js and get Type Declarations for it
 
 // global home variable
 var gh = {

@@ -4,7 +4,8 @@ project(SBO)
 add_executable(sbo
     src/main.cpp
     src/game_server.cpp
-    src/game_client.cpp)
+    src/game_client.cpp
+    src/entity.cpp)
 target_link_libraries(sbo
     ws2_32
     boost_system-mt

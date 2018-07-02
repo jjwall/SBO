@@ -1,4 +1,5 @@
 #include "game_server.hpp"
+#include "game.hpp"
 #include <iostream>
 #include <vector>
 #include <stdexcept>
@@ -17,14 +18,36 @@ void game_server::init(int p) {
     port = p;
 }
 
-void game_server::on_message(connection_hdl, server::message_ptr msg) {
+void game_server::on_message(connection_hdl hdl, server::message_ptr msg) {
+    server::connection_ptr incoming_con = websocket.get_con_from_hdl(hdl);
     json event = json::parse(msg->get_payload());
-    if (event["eventType"] == "input") {
-        std::cout << "THE JSON = \"" << event["eventData"]["key"] << "\"" << std::endl;
+
+    // convert this code into "event_handler" free function
+    for (int i = 0; i < game::entity_list.size(); i++) {
+        if (websocket.get_con_from_hdl(game::entity_list[i].handle) == incoming_con) {
+            if (event["eventType"] == "input") {
+                if (event["eventData"]["key"] == "left" && event["eventData"]["state"] == "down") {
+                    game::entity_list[i].pos.x -= 10;
+                    std::cout << "Pos:" << game::entity_list[i].pos.x << std::endl;
+                    // broadcast() -> set up position handling on frontend
+                }
+                if (event["eventData"]["key"] == "right" && event["eventData"]["state"] == "down") {
+                    game::entity_list[i].pos.x += 10;
+                    std::cout << "Pos:" << game::entity_list[i].pos.x << std::endl;
+                    // broadcast() -> set up position handling on frontend
+                }
+            }
+        }
     }
+    // if (event["eventType"] == "input") {
+    //     std::cout << "THE JSON = \"" << event["eventData"]["key"] << "\"" << std::endl;
+    // }
 }
 
 void game_server::on_open(connection_hdl hdl) {
+    entity e(hdl);
+    game::entity_list.push_back(e); // -> merge connection_list with entity_list? -> yes
+
     server::connection_ptr con = websocket.get_con_from_hdl(hdl);
 
     connection_list.push_back(con);
