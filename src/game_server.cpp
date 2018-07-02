@@ -18,7 +18,10 @@ void game_server::init(int p) {
 }
 
 void game_server::on_message(connection_hdl, server::message_ptr msg) {
-    std::cout << msg->get_payload() << std::endl;
+    json event = json::parse(msg->get_payload());
+    if (event["eventType"] == "input") {
+        std::cout << "THE JSON = \"" << event["eventData"]["key"] << "\"" << std::endl;
+    }
 }
 
 void game_server::on_open(connection_hdl hdl) {

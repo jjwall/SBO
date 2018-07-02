@@ -14,9 +14,11 @@ class game_client {
 public:
     static client c;
 
+    // Method for sending messages to lobby server
     static void on_message(client* c, connection_hdl hdl, message_ptr msg);
 
+    // Method for handling newly created connection with lobby server
     static void on_open(client* c, connection_hdl hdl);
 };
 
-#endif // GAME_SERVER_HPP
+#endif // GAME_CLIENT_HPP

@@ -14,3 +14,5 @@ target_include_directories(sbo PUBLIC
     ext/nlohmann/single_include)
 set_target_properties(sbo
     PROPERTIES CXX_STANDARD 17)
+target_compile_options(sbo PRIVATE
+    "$<$<CONFIG:DEBUG>:-Wa,-mbig-obj>")
