@@ -1,17 +1,13 @@
 #include "entity.hpp"
 #include "components/position_component.hpp"
+#include <websocketpp/server.hpp>
+#include <websocketpp/config/asio_no_tls.hpp>
 
-entity::entity(connection_hdl hdl, position_component pos) {
-    handle = hdl;
-    // position = std::make_unique<position_component>(pos.x_pos, pos.y_pos, pos.x_vel, pos.y_vel, pos.width, pos.height);
+typedef websocketpp::server<websocketpp::config::asio> server;
+
+entity::entity(server::connection_ptr con, position_component pos) {
+    // handle = hdl;
+    connection = con;
+    
     position = std::make_unique<position_component>(pos);
-    // pos.x = 100;
-    // pos.y = 0;
-    // pos.w = 32;
-    // pos.h = 64;
 }
-
-//entity::~entity() {
-    //position.reset();
-    //delete pos;
-//}

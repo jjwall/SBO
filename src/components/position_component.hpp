@@ -13,9 +13,9 @@ public:
 
     float y_vel;
 
-    float width;
+    float width; // -> maybe move to rendering_system
 
-    float height;
+    float height; // -> maybe move to rendering_system
 
     bool left;
 

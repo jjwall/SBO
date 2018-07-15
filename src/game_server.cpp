@@ -32,11 +32,10 @@ void game_server::on_message(connection_hdl hdl, server::message_ptr msg) {
 
 void game_server::on_open(connection_hdl hdl) {
     // will need entity_creation event
-    position_component pos(100, 0,5, 1, 32, 64);
-    entity e(hdl, pos);
-    game_state_ptr->entity_list.push_back(std::move(e)); // -> merge connection_list with entity_list? -> yes
-
     server::connection_ptr con = websocket.get_con_from_hdl(hdl);
+    position_component pos(100, 0,5, 1, 32, 64); // -> hard coded values for now
+    entity e(con, pos);
+    game_state_ptr->entity_list.push_back(std::move(e)); // -> merge connection_list with entity_list? -> yes
 
     connection_list.push_back(con);
     std::cout << "We gained a connection: now we have " << connection_list.size() << std::endl;
