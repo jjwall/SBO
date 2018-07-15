@@ -6,8 +6,10 @@ add_executable(sbo
     src/game.cpp
     src/game_server.cpp
     src/game_client.cpp
+    src/entity.cpp
     src/systems/event_handler_system.cpp
-    src/entity.cpp)
+    src/systems/position_system.cpp
+    src/components/position_component.cpp)
 target_link_libraries(sbo
     ws2_32
     boost_system-mt

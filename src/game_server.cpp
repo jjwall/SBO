@@ -1,5 +1,7 @@
 #include "game_server.hpp"
 #include "game.hpp"
+#include "entity.hpp"
+#include "components/position_component.hpp" // -> will need event for handling entity creation
 #include <iostream>
 #include <vector>
 #include <stdexcept>
@@ -25,33 +27,14 @@ void game_server::on_message(connection_hdl hdl, server::message_ptr msg) {
     game::message message;
     message.con = incoming_con;
     message.event = event;
-    game_state_ptr->messages.push_back(message);
-
-    // convert this code into "event_handler" free function
-    for (int i = 0; i < game::entity_list.size(); i++) {
-        if (websocket.get_con_from_hdl(game::entity_list[i].handle) == incoming_con) {
-            if (event["eventType"] == "input") {
-                if (event["eventData"]["key"] == "left" && event["eventData"]["state"] == "down") {
-                    game::entity_list[i].pos.x -= 10;
-                    std::cout << "Pos:" << game::entity_list[i].pos.x << std::endl;
-                    // broadcast() -> set up position handling on frontend
-                }
-                if (event["eventData"]["key"] == "right" && event["eventData"]["state"] == "down") {
-                    game::entity_list[i].pos.x += 10;
-                    std::cout << "Pos:" << game::entity_list[i].pos.x << std::endl;
-                    // broadcast() -> set up position handling on frontend
-                }
-            }
-        }
-    }
-    // if (event["eventType"] == "input") {
-    //     std::cout << "THE JSON = \"" << event["eventData"]["key"] << "\"" << std::endl;
-    // }
+    game_state_ptr->message_list.push_back(message);
 }
 
 void game_server::on_open(connection_hdl hdl) {
-    entity e(hdl);
-    game::entity_list.push_back(e); // -> merge connection_list with entity_list? -> yes
+    // will need entity_creation event
+    position_component pos(100, 0,5, 1, 32, 64);
+    entity e(hdl, pos);
+    game_state_ptr->entity_list.push_back(std::move(e)); // -> merge connection_list with entity_list? -> yes
 
     server::connection_ptr con = websocket.get_con_from_hdl(hdl);
 

@@ -28,7 +28,7 @@ std::vector<server::connection_ptr> game_server::connection_list;
 std::shared_ptr<game> game_server::game_state_ptr;
 server game_server::websocket;
 client game_client::c;
-std::vector<entity> game::entity_list;
+// std::vector<entity> game::entity_list;
 
 int main(int argc, char* argv[]) {
     // for now we are going to assume we are only in the game state

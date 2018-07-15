@@ -23,12 +23,9 @@ public:
         json event;
     };
 
-    // std::tuple<server::connection_ptr, std::vector<json 
-    // std::vector<std::tuple<server::connection_ptr, json>> messages;
-    // std::vector<json> messages;
-    std::vector<message> messages;
+    std::vector<message> message_list;
 
-    static std::vector<entity> entity_list;
+    std::vector<entity> entity_list;
 };
 
-#endif // GAME_HPP
+#endif // GAME_HP

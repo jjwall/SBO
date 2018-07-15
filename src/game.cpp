@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "game_server.hpp"
+#include "entity.hpp"
 #include "systems/event_handler_system.hpp"
 #include <vector>
 #include <websocketpp/config/asio_no_tls.hpp>
@@ -11,11 +12,10 @@ using json = nlohmann::json;
 typedef websocketpp::server<websocketpp::config::asio> server;
 
 game::game() {
-    messages = std::vector<message>();
+    message_list = std::vector<message>();
+    entity_list = std::vector<entity>();
 }
 
 void game::update() {
-
-    event_handler_system(messages);
-    // std::cout << "hey" << std::endl;
+    event_handler_system(message_list, entity_list);
 }

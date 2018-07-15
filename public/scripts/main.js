@@ -41,7 +41,7 @@ window.onkeydown = function (e) {
         g.keyLeftIsDown = true;
         g.keyLeft = true;
         var keyData = {
-            "eventType": "input",
+            "eventType": "position",
             "eventData": {
                 "key": "left",
                 "state": "down"
@@ -54,7 +54,7 @@ window.onkeydown = function (e) {
         g.keyRightIsDown = true;
         g.keyRight = true;
         var keyData = {
-            "eventType": "input",
+            "eventType": "position",
             "eventData": {
                 "key": "right",
                 "state": "down"
@@ -69,7 +69,7 @@ window.onkeyup = function (e) {
         g.keyLeftIsDown = false;
         g.keyLeft = false;
         var keyData = {
-            "eventType": "input",
+            "eventType": "position",
             "eventData": {
                 "key": "left",
                 "state": "up"
@@ -82,7 +82,7 @@ window.onkeyup = function (e) {
         g.keyRightIsDown = false;
         g.keyRight = false;
         var keyData = {
-            "eventType": "input",
+            "eventType": "position",
             "eventData": {
                 "key": "right",
                 "state": "up"
