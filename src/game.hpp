@@ -4,11 +4,13 @@
 #include "base_state.hpp"
 #include "entity.hpp"
 #include <vector>
+#include <websocketpp/config/asio_no_tls.hpp>
+#include <websocketpp/server.hpp>
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
-// #include <websocketpp/config/asio_no_tls.hpp>
-// #include <websocketpp/server.hpp>
+
+typedef websocketpp::server<websocketpp::config::asio> server;
 
 class game: public base_state {
 public:
@@ -16,7 +18,15 @@ public:
 
     void update();
 
-    std::vector<json> messages;
+    struct message {
+        server::connection_ptr con;
+        json event;
+    };
+
+    // std::tuple<server::connection_ptr, std::vector<json 
+    // std::vector<std::tuple<server::connection_ptr, json>> messages;
+    // std::vector<json> messages;
+    std::vector<message> messages;
 
     static std::vector<entity> entity_list;
 };

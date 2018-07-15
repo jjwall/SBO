@@ -22,7 +22,10 @@ void game_server::init(int p, std::shared_ptr<game> gsp) {
 void game_server::on_message(connection_hdl hdl, server::message_ptr msg) {
     server::connection_ptr incoming_con = websocket.get_con_from_hdl(hdl);
     json event = json::parse(msg->get_payload());
-    game_state_ptr->messages.push_back(event);
+    game::message message;
+    message.con = incoming_con;
+    message.event = event;
+    game_state_ptr->messages.push_back(message);
 
     // convert this code into "event_handler" free function
     for (int i = 0; i < game::entity_list.size(); i++) {
