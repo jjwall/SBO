@@ -1,3 +1,4 @@
+#include "base_state.hpp"
 #include "game.hpp"
 #include "game_server.hpp"
 #include "game_client.hpp"
@@ -18,15 +19,23 @@ using json = nlohmann::json;
 typedef websocketpp::client<websocketpp::config::asio_client> client;
 typedef websocketpp::server<websocketpp::config::asio> server;
 
+// vector for storing all possible states
+std::vector<std::shared_ptr<base_state>> states_vec;
+
 bool game_server::initialized = false;
 int game_server::port;
 std::vector<server::connection_ptr> game_server::connection_list;
+std::shared_ptr<game> game_server::game_state_ptr;
 server game_server::websocket;
 client game_client::c;
 std::vector<entity> game::entity_list;
 
 int main(int argc, char* argv[]) {
-    game_server::init(std::atoi(argv[1]));
+    // for now we are going to assume we are only in the game state
+    auto game_state = std::make_shared<game>();
+    states_vec.push_back(game_state);
+
+    game_server::init(std::atoi(argv[1]), game_state);
 
     game_server::websocket.set_message_handler(&game_server::on_message);
     game_server::websocket.set_open_handler(&game_server::on_open);
@@ -75,6 +84,12 @@ int main(int argc, char* argv[]) {
 
             game_server::websocket.poll();
             game_client::c.poll();
+
+            // call update on most recently added state
+            if (!states_vec.empty()) {
+                states_vec.back()->update();
+            }
+
             std::this_thread::sleep_for(20ms);
         }
     }

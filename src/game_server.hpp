@@ -1,6 +1,7 @@
 #ifndef GAME_SERVER_HPP
 #define GAME_SERVER_HPP
 
+#include "game.hpp"
 #include <vector>
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
@@ -16,7 +17,7 @@ public:
     static server websocket;
 
     // Initializes the private static data members
-    static void init(int p);
+    static void init(int p, std::shared_ptr<game> gsp);
 
     // Method for receiving messages from connected clients
     static void on_message(connection_hdl, server::message_ptr msg);
@@ -40,6 +41,7 @@ private:
     static bool initialized;
     static int port;
     static std::vector<server::connection_ptr> connection_list;
+    static std::shared_ptr<game> game_state_ptr;
 };
 
 #endif // GAME_SERVER_HPP

@@ -3,8 +3,10 @@ project(SBO)
 
 add_executable(sbo
     src/main.cpp
+    src/game.cpp
     src/game_server.cpp
     src/game_client.cpp
+    src/systems/event_handler_system.cpp
     src/entity.cpp)
 target_link_libraries(sbo
     ws2_32
