@@ -1,5 +1,5 @@
-#include "../game.hpp"
-#include "../entity.hpp"
+#include "game.hpp"
+#include "entity.hpp"
 #include <vector>
 #include <nlohmann/json.hpp>
 

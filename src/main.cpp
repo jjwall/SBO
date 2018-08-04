@@ -22,6 +22,7 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 // vector for storing all possible states
 std::vector<std::shared_ptr<base_state>> states_vec;
 
+// nothing static!!
 bool game_server::initialized = false;
 int game_server::port;
 std::vector<server::connection_ptr> game_server::connection_list;

@@ -1,8 +1,8 @@
 #include "game.hpp"
 #include "game_server.hpp"
 #include "entity.hpp"
-#include "systems/event_handler_system.hpp"
-#include "systems/position_system.hpp"
+#include "event_handler_system.hpp"
+#include "position_system.hpp"
 #include <vector>
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>

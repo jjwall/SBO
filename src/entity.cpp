@@ -1,5 +1,5 @@
 #include "entity.hpp"
-#include "components/position_component.hpp"
+#include "position_component.hpp"
 #include <websocketpp/server.hpp>
 #include <websocketpp/config/asio_no_tls.hpp>
 

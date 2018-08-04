@@ -10,6 +10,16 @@ var params = new URLSearchParams(window.location.search), g = {
 };
 if (g.currentPort != null) {
     g.connection = new WebSocket("ws://" + g.hostName + ":" + g.currentPort);
+    g.connection.onopen = function (event) {
+        var newPlayerData = {
+            "eventType": "newPlayer",
+            "eventData": {
+                "class": "wizard",
+                "team": "red"
+            }
+        };
+        g.connection.send(JSON.stringify(newPlayerData));
+    };
     g.connection.onmessage = function (message) {
         var jsonEvent = JSON.parse(message.data);
         var eventTypeName = jsonEvent["eventType"];

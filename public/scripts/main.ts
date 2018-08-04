@@ -15,9 +15,16 @@ g = {
 if (g.currentPort != null) {// && currentPort > 9000 && currentPort < 9051) { // -> need to have this same sort of check in the node app when spinning up servers
     g.connection = new WebSocket("ws://" + g.hostName + ":" + g.currentPort);
 
-    // g.connection.onopen = function(event):void {
-    //     g.connection.send('JavaScript client says: HEYOOOO from PORT ' + g.currentPort);
-    // }
+    g.connection.onopen = function(event):void {
+        var newPlayerData = {
+            "eventType": "newPlayer",
+            "eventData": {
+                "class": "wizard", // -> example eventData
+                "team": "red", // -> for player creation event
+            }
+        }
+        g.connection.send(JSON.stringify(newPlayerData));
+    }
 
     // all JSON blobs will come through here with an event type
     // switch statment will call the function pertaining to that event type
