@@ -14,8 +14,8 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 
 class game_server {
 public:
-    // Initializes the private static data members
-    void init(int p, std::shared_ptr<game> gsp);
+    // Constructor to initialize the private static data members
+    game_server(int p, std::shared_ptr<game> gsp);
 
     // Method for receiving messages from connected clients
     void on_message(connection_hdl, server::message_ptr msg);
@@ -33,17 +33,16 @@ public:
     void poll();
 
     // Retrieves port number
-    static int get_port();
+    int get_port();
 
     // Retrieves number of connections
-    static int get_connections();
+    int get_connections();
     
 private:
     server s;
-    static bool initialized;
-    static int port;
-    static std::vector<server::connection_ptr> connection_list;
-    static std::shared_ptr<game> game_state_ptr;
+    int port;
+    std::vector<server::connection_ptr> connection_list;
+    std::shared_ptr<game> game_state_ptr;
 };
 
 #endif // GAME_SERVER_HPP

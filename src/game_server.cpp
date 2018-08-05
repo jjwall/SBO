@@ -1,10 +1,9 @@
 #include "game_server.hpp"
 #include "game.hpp"
-#include "entity.hpp"
-#include "position_component.hpp" // -> will need event for handling entity creation
+// #include "entity.hpp"
+// #include "position_component.hpp" // -> will need event for handling entity creation
 #include <iostream>
 #include <vector>
-#include <stdexcept>
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
 #include <nlohmann/json.hpp>
@@ -14,15 +13,13 @@ using json = nlohmann::json;
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 
-void game_server::init(int p, std::shared_ptr<game> gsp) {
-    if (initialized) throw std::runtime_error("DON'T TRY AND RE-INIT");
-    initialized = true;
+game_server::game_server(int p, std::shared_ptr<game> gsp) {
     port = p;
     game_state_ptr = gsp;
     
-    s.set_message_handler([this](auto hdl, auto msg){on_message(hdl, msg);});
-    s.set_open_handler([this](auto hdl){on_open(hdl);});
-    s.set_close_handler([this](auto hdl){on_close(hdl);});
+    s.set_message_handler([this](auto hdl, auto msg){ on_message(hdl, msg); });
+    s.set_open_handler([this](auto hdl){ on_open(hdl); });
+    s.set_close_handler([this](auto hdl){ on_close(hdl); });
     s.set_access_channels(websocketpp::log::alevel::all);
     s.set_error_channels(websocketpp::log::elevel::all);
 
