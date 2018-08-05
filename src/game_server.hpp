@@ -14,22 +14,23 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 
 class game_server {
 public:
-    static server websocket;
-
     // Initializes the private static data members
-    static void init(int p, std::shared_ptr<game> gsp);
+    void init(int p, std::shared_ptr<game> gsp);
 
     // Method for receiving messages from connected clients
-    static void on_message(connection_hdl, server::message_ptr msg);
+    void on_message(connection_hdl, server::message_ptr msg);
 
     // Method for handling new connections
-    static void on_open(connection_hdl hdl);
+    void on_open(connection_hdl hdl);
 
     // Method for handling disconnections
-    static void on_close(connection_hdl hdl);
+    void on_close(connection_hdl hdl);
 
     // Method to send messages to all connected clients
-    static void broadcast(server* s, json msg);
+    void broadcast(server* s, json msg);
+
+    // Method to poll the server for messages
+    void poll();
 
     // Retrieves port number
     static int get_port();
@@ -38,6 +39,7 @@ public:
     static int get_connections();
     
 private:
+    server s;
     static bool initialized;
     static int port;
     static std::vector<server::connection_ptr> connection_list;

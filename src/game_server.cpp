@@ -19,10 +19,20 @@ void game_server::init(int p, std::shared_ptr<game> gsp) {
     initialized = true;
     port = p;
     game_state_ptr = gsp;
+    
+    s.set_message_handler([this](auto hdl, auto msg){on_message(hdl, msg);});
+    s.set_open_handler([this](auto hdl){on_open(hdl);});
+    s.set_close_handler([this](auto hdl){on_close(hdl);});
+    s.set_access_channels(websocketpp::log::alevel::all);
+    s.set_error_channels(websocketpp::log::elevel::all);
+
+    s.init_asio();
+    s.listen(game_server::get_port());
+    s.start_accept();
 }
 
 void game_server::on_message(connection_hdl hdl, server::message_ptr msg) {
-    server::connection_ptr incoming_con = websocket.get_con_from_hdl(hdl);
+    server::connection_ptr incoming_con = s.get_con_from_hdl(hdl);
     json event = json::parse(msg->get_payload());
     game::message message;
     message.con = incoming_con;
@@ -31,13 +41,13 @@ void game_server::on_message(connection_hdl hdl, server::message_ptr msg) {
 }
 
 void game_server::on_open(connection_hdl hdl) {
-    server::connection_ptr con = websocket.get_con_from_hdl(hdl);
+    server::connection_ptr con = s.get_con_from_hdl(hdl);
     connection_list.push_back(con);
     std::cout << "We gained a connection: now we have " << connection_list.size() << std::endl;
 }
 
 void game_server::on_close(connection_hdl hdl) {
-    server::connection_ptr con = websocket.get_con_from_hdl(hdl);
+    server::connection_ptr con = s.get_con_from_hdl(hdl);
     
     connection_list.erase(std::find(connection_list.begin(), connection_list.end(), con));
     std::cout << "We lost a connection: now we have " << connection_list.size() << std::endl;
@@ -48,6 +58,10 @@ void game_server::broadcast(server* s, json msg) {
     for (int i = 0; i < connection_list.size(); i++) {
         s->send(connection_list[i], msg_string, websocketpp::frame::opcode::text);
     }
+}
+
+void game_server::poll() {
+    s.poll();
 }
 
 int game_server::get_port() {

@@ -27,7 +27,7 @@ bool game_server::initialized = false;
 int game_server::port;
 std::vector<server::connection_ptr> game_server::connection_list;
 std::shared_ptr<game> game_server::game_state_ptr;
-server game_server::websocket;
+// server game_server::websocket;
 client game_client::c;
 // std::vector<entity> game::entity_list;
 
@@ -35,18 +35,8 @@ int main(int argc, char* argv[]) {
     // for now we are going to assume we are only in the game state
     auto game_state = std::make_shared<game>();
     states_vec.push_back(game_state);
-
-    game_server::init(std::atoi(argv[1]), game_state);
-
-    game_server::websocket.set_message_handler(&game_server::on_message);
-    game_server::websocket.set_open_handler(&game_server::on_open);
-    game_server::websocket.set_close_handler(&game_server::on_close);
-    game_server::websocket.set_access_channels(websocketpp::log::alevel::all);
-    game_server::websocket.set_error_channels(websocketpp::log::elevel::all);
-
-    game_server::websocket.init_asio();
-    game_server::websocket.listen(game_server::get_port());
-    game_server::websocket.start_accept();
+    game_server g_server;
+    g_server.init(std::atoi(argv[1]), game_state);
 
     std::cout << "Listening for connections on port " << game_server::get_port() << std::endl;
 
@@ -83,7 +73,7 @@ int main(int argc, char* argv[]) {
         while (true) {
             // game_server::broadcast(&game_server::websocket, test_blob);
 
-            game_server::websocket.poll();
+            g_server.poll();
             game_client::c.poll();
 
             // call update on most recently added state

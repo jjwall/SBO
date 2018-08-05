@@ -3,16 +3,15 @@
 #include <iostream>
 #include <vector>
 #include <nlohmann/json.hpp>
-#include <websocketpp/server.hpp>
-#include <websocketpp/config/asio_no_tls.hpp>
+// #include <websocketpp/server.hpp>
+// #include <websocketpp/config/asio_no_tls.hpp>
 
 // using websocketpp::connection_hdl;
 
 using json = nlohmann::json;
 
-typedef websocketpp::server<websocketpp::config::asio> server;
+// typedef websocketpp::server<websocketpp::config::asio> server;
 
-// void handle_player_creation_event(const server::connection_ptr &con, std::vector<entity> &ents) {
 void handle_player_creation_event(const game::message &msg, std::vector<entity> &ents) {
     // do something with msg.event to create character class with certain stats ect.
     position_component pos(100, 0,5, 1, 32, 64); // -> hard coded values for now
