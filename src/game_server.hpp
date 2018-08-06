@@ -1,7 +1,6 @@
 #ifndef GAME_SERVER_HPP
 #define GAME_SERVER_HPP
 
-#include "game.hpp"
 #include <vector>
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
@@ -12,10 +11,15 @@ using json = nlohmann::json;
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 
+class game;
+
 class game_server {
 public:
     // Constructor to initialize the private static data members
-    game_server(int p, std::shared_ptr<game> gsp);
+    game_server(int p);
+
+    // Setter for setting the game_state_ptr, necessary for fully setting up game_server
+    void set_game_state_ptr(game* g_state_ptr);
 
     // Method for receiving messages from connected clients
     void on_message(connection_hdl, server::message_ptr msg);
@@ -42,7 +46,7 @@ private:
     server s;
     int port;
     std::vector<server::connection_ptr> connection_list;
-    std::shared_ptr<game> game_state_ptr;
+    game* game_state_ptr;
 };
 
 #endif // GAME_SERVER_HPP

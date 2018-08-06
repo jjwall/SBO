@@ -10,7 +10,7 @@ using json = nlohmann::json;
 typedef websocketpp::config::asio_client::message_type::ptr message_ptr;
 typedef websocketpp::client<websocketpp::config::asio_client> client;
 
-game_client::game_client(std::string uri, std::shared_ptr<game_server> g_server_ptr) {
+game_client::game_client(std::string uri, game_server* g_server_ptr) {
     uri_str = uri;
     game_server_ptr = g_server_ptr;
 

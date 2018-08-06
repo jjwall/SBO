@@ -9,27 +9,31 @@
 
 using namespace std::literals;
 
-// vector for storing all possible states
-std::vector<std::shared_ptr<base_state>> states_vec;
-
 int main(int argc, char* argv[]) {
-    // for now we are going to assume we are only in the game state
-    auto game_state_ptr = std::make_shared<game>();
+    // initialize game state
+    game g_state;
+    // initialize game server
+    game_server g_server(std::atoi(argv[1]));
+    // set game state pointer prop on game server obj
+    g_server.set_game_state_ptr(&g_state);
+    // set game server pointer prop on game state obj
+    g_state.set_game_server_ptr(&g_server);
+    // vector of all possible states (just game state for now)
+    std::vector<base_state*> states_vec;
+    // push game state obj on top of states vec
+    states_vec.push_back(&g_state);
 
-    states_vec.push_back(game_state_ptr);
-
-    auto g_server_ptr = std::make_shared<game_server>(std::atoi(argv[1]), game_state_ptr);
-
-    std::cout << "Listening for connections on port " << g_server_ptr->get_port() << std::endl;
+    std::cout << "Listening for connections on port " << g_server.get_port() << std::endl;
 
     try {
+        // url of lobby server
         std::string uri = "ws://localhost:8080";
-
-        game_client g_client(uri, g_server_ptr);
+        // initialize game client
+        game_client g_client(uri, &g_server);
 
         // start polling both client and server
         while (true) {
-            g_server_ptr->poll();
+            g_server.poll();
             g_client.poll();
 
             // call update on most recently added state

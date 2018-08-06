@@ -14,7 +14,7 @@ typedef websocketpp::client<websocketpp::config::asio_client> client;
 class game_client {
 public:
     // Constructor for initializing private data members
-    game_client(std::string uri, std::shared_ptr<game_server> g_server_ptr);
+    game_client(std::string uri, game_server* g_server_ptr);
 
     // Method for receiving messages from lobby server (about connection info)
     void on_message(client* c, connection_hdl hdl, message_ptr msg);
@@ -28,7 +28,7 @@ public:
 private:
     client c;
     std::string uri_str;
-    std::shared_ptr<game_server> game_server_ptr;
+    game_server* game_server_ptr;
 };
 
 #endif // GAME_CLIENT_HPP
