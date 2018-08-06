@@ -23,7 +23,7 @@ void game::set_game_server_ptr(game_server* g_server_ptr) {
 
 void game::update() {
     event_handler_system(message_list, entity_list);
-    position_system(entity_list);
+    position_system(entity_list, game_server_ptr);
 }
 
 void game::add_message(const message msg) {

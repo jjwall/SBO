@@ -30,11 +30,11 @@ if (g.currentPort != null) {// && currentPort > 9000 && currentPort < 9051) { //
     // switch statment will call the function pertaining to that event type
     g.connection.onmessage = function(message):void {
         var jsonEvent = JSON.parse(message.data);
-        var eventTypeName = jsonEvent["eventType"];
+        var eventTypeName = jsonEvent["event_type"];
 
         switch(eventTypeName) {
-            case "eventTypeTest":
-                eventTypeTest(jsonEvent);
+            case "position":
+                positionEvent(jsonEvent);
                 break;
             case "anotherTest":
                 console.log("trigger this eventType function");
@@ -50,12 +50,12 @@ if (g.currentPort != null) {// && currentPort > 9000 && currentPort < 9051) { //
 // will also have switch statement on event sub type
 // an example would be eventType: attack -> call attack()
 // switch on eventSubtType: fireball / sword slash etc...
-function eventTypeTest(jsonEvent:JSON):void {
-    var eventSubTypeName = jsonEvent["eventSubType"];
+function positionEvent(jsonEvent:JSON):void {
+    var eventSubTypeName = jsonEvent["event_subtype"];
 
     switch(eventSubTypeName) {
-        case "eventSpecifics":
-            console.log(jsonEvent["eventData"]);
+        case "movement":
+            console.log(jsonEvent["event_data"]);
             // -> update global client info etc.
             break;
         default:

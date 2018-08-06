@@ -31,7 +31,7 @@ public:
     void on_close(connection_hdl hdl);
 
     // Method to send messages to all connected clients
-    void broadcast(server* s, json msg);
+    void broadcast(json msg);
 
     // Method to poll the server for messages
     void poll();

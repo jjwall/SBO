@@ -52,11 +52,11 @@ void game_server::on_close(connection_hdl hdl) {
     std::cout << "We lost a connection: now we have " << connection_list.size() << std::endl;
 }
 
-void game_server::broadcast(server* s, json msg) {
+void game_server::broadcast(json msg) {
     std::string msg_string = msg.dump();
 
     for (int i = 0; i < connection_list.size(); i++) {
-        s->send(connection_list[i], msg_string, websocketpp::frame::opcode::text);
+        s.send(connection_list[i], msg_string, websocketpp::frame::opcode::text);
     }
 }
 

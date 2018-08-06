@@ -22,10 +22,10 @@ if (g.currentPort != null) {
     };
     g.connection.onmessage = function (message) {
         var jsonEvent = JSON.parse(message.data);
-        var eventTypeName = jsonEvent["eventType"];
+        var eventTypeName = jsonEvent["event_type"];
         switch (eventTypeName) {
-            case "eventTypeTest":
-                eventTypeTest(jsonEvent);
+            case "position":
+                positionEvent(jsonEvent);
                 break;
             case "anotherTest":
                 console.log("trigger this eventType function");
@@ -35,11 +35,11 @@ if (g.currentPort != null) {
         }
     };
 }
-function eventTypeTest(jsonEvent) {
-    var eventSubTypeName = jsonEvent["eventSubType"];
+function positionEvent(jsonEvent) {
+    var eventSubTypeName = jsonEvent["event_subtype"];
     switch (eventSubTypeName) {
-        case "eventSpecifics":
-            console.log(jsonEvent["eventData"]);
+        case "movement":
+            console.log(jsonEvent["event_data"]);
             break;
         default:
             console.log("unknown eventSubType");
