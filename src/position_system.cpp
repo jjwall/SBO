@@ -1,13 +1,13 @@
 #include "position_system.hpp"
 #include "game.hpp"
-#include "game_server.hpp"
+#include "networking_system.hpp"
 #include "entity.hpp"
 #include <vector>
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
 
-void position_system(std::vector<entity> &ents, game_server* g_server_ptr) {
+void position_system(std::vector<entity> &ents, networking_system* networking_ptr) {
     json json_blob;
     json_blob["event_type"] = "position";
 
@@ -23,7 +23,7 @@ void position_system(std::vector<entity> &ents, game_server* g_server_ptr) {
                 // get unique player number
                 json_blob["event_data"] = {{"player", 1}, {"posX", ents[i].position->x_pos}};
 
-                g_server_ptr->broadcast(json_blob);
+                networking_ptr->broadcast(json_blob);
             }
             if (ents[i].position->right) {
                 ents[i].position->x_pos += ents[i].position->x_vel;
@@ -35,7 +35,7 @@ void position_system(std::vector<entity> &ents, game_server* g_server_ptr) {
                 // get unique player number
                 json_blob["event_data"] = {{"player", 1}, {"posX", ents[i].position->x_pos}};
 
-                g_server_ptr->broadcast(json_blob);
+                networking_ptr->broadcast(json_blob);
             }
         }
     }

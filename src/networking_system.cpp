@@ -1,4 +1,4 @@
-#include "game_server.hpp"
+#include "networking_system.hpp"
 #include "game.hpp"
 // #include "entity.hpp"
 // #include "position_component.hpp" // -> will need event for handling entity creation
@@ -13,7 +13,7 @@ using json = nlohmann::json;
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 
-game_server::game_server(int p) {
+networking_system::networking_system(int p) {
     port = p;
     
     s.set_message_handler([this](auto hdl, auto msg){ on_message(hdl, msg); });
@@ -23,15 +23,15 @@ game_server::game_server(int p) {
     s.set_error_channels(websocketpp::log::elevel::all);
 
     s.init_asio();
-    s.listen(game_server::get_port());
+    s.listen(port);
     s.start_accept();
 }
 
-void game_server::set_game_state_ptr(game* g_state_ptr) {
+void networking_system::set_game_state_ptr(game* g_state_ptr) {
     game_state_ptr = g_state_ptr;
 }
 
-void game_server::on_message(connection_hdl hdl, server::message_ptr msg) {
+void networking_system::on_message(connection_hdl hdl, server::message_ptr msg) {
     server::connection_ptr incoming_con = s.get_con_from_hdl(hdl);
     json event = json::parse(msg->get_payload());
     game::message message;
@@ -40,19 +40,19 @@ void game_server::on_message(connection_hdl hdl, server::message_ptr msg) {
     game_state_ptr->add_message(message);
 }
 
-void game_server::on_open(connection_hdl hdl) {
+void networking_system::on_open(connection_hdl hdl) {
     server::connection_ptr con = s.get_con_from_hdl(hdl);
     connection_list.push_back(con);
     std::cout << "We gained a connection: now we have " << connection_list.size() << std::endl;
 }
 
-void game_server::on_close(connection_hdl hdl) {
+void networking_system::on_close(connection_hdl hdl) {
     server::connection_ptr con = s.get_con_from_hdl(hdl);
     connection_list.erase(std::find(connection_list.begin(), connection_list.end(), con));
     std::cout << "We lost a connection: now we have " << connection_list.size() << std::endl;
 }
 
-void game_server::broadcast(json msg) {
+void networking_system::broadcast(json msg) {
     std::string msg_string = msg.dump();
 
     for (int i = 0; i < connection_list.size(); i++) {
@@ -60,14 +60,14 @@ void game_server::broadcast(json msg) {
     }
 }
 
-void game_server::poll() {
+void networking_system::poll() {
     s.poll();
 }
 
-int game_server::get_port() {
+int networking_system::get_port() {
     return port;
 }
 
-int game_server::get_connections() {
+int networking_system::get_connections() {
     return connection_list.size();
 }

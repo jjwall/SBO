@@ -1,5 +1,5 @@
 #include "game.hpp"
-#include "game_server.hpp"
+#include "networking_system.hpp"
 #include "entity.hpp"
 #include "event_handler_system.hpp"
 #include "position_system.hpp"
@@ -17,13 +17,13 @@ game::game() {
     entity_list = std::vector<entity>();
 }
 
-void game::set_game_server_ptr(game_server* g_server_ptr) {
-    game_server_ptr = g_server_ptr;
+void game::set_networking_system_ptr(networking_system* networking_ptr) {
+    networking_system_ptr = networking_ptr;
 }
 
 void game::update() {
     event_handler_system(message_list, entity_list);
-    position_system(entity_list, game_server_ptr);
+    position_system(entity_list, networking_system_ptr);
 }
 
 void game::add_message(const message msg) {

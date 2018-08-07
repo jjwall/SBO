@@ -4,7 +4,7 @@ project(SBO)
 add_executable(sbo
     src/main.cpp
     src/game.cpp
-    src/game_server.cpp
+    src/networking_system.cpp
     src/game_client.cpp
     src/entity.cpp
     src/event_handler_system.cpp

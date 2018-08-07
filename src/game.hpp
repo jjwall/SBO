@@ -13,7 +13,7 @@ using json = nlohmann::json;
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 
-class game_server;
+class networking_system;
 
 class game: public base_state {
 public:
@@ -21,7 +21,7 @@ public:
     game();
 
     // Method to set the game server pointer property, necessary to fully set up the game class
-    void set_game_server_ptr(game_server* g_server_ptr);
+    void set_networking_system_ptr(networking_system* networking_ptr);
 
     // Method to update a frame of the game state
     void update();
@@ -36,7 +36,7 @@ public:
     void add_message(const message msg);
 
 private:
-    game_server* game_server_ptr;
+    networking_system* networking_system_ptr;
     std::vector<message> message_list;
     std::vector<entity> entity_list;
 };

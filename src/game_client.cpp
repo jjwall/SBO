@@ -1,5 +1,5 @@
 #include "game_client.hpp"
-#include "game_server.hpp"
+#include "networking_system.hpp"
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/config/asio_no_tls_client.hpp>
 #include <websocketpp/client.hpp>
@@ -10,9 +10,9 @@ using json = nlohmann::json;
 typedef websocketpp::config::asio_client::message_type::ptr message_ptr;
 typedef websocketpp::client<websocketpp::config::asio_client> client;
 
-game_client::game_client(std::string uri, game_server* g_server_ptr) {
+game_client::game_client(std::string uri, networking_system* networking_ptr) {
     uri_str = uri;
-    game_server_ptr = g_server_ptr;
+    networking_system_ptr = networking_ptr;
 
     // Set logging to be pretty verbose (everything except message payloads)
     //c.set_access_channels(websocketpp::log::alevel::all);
@@ -41,11 +41,11 @@ void game_client::on_message(client* c, connection_hdl hdl, message_ptr msg) {
 
     if (msg->get_payload() == "get connections") {
         json port_con_info = {
-            {"port", game_server_ptr->get_port()},
-            {"connections", game_server_ptr->get_connections()}
+            {"port", networking_system_ptr->get_port()},
+            {"connections", networking_system_ptr->get_connections()}
         };
 
-        std::cout << "Sending game server info from port " << game_server_ptr->get_port() << std::endl;
+        std::cout << "Sending game server info from port " << networking_system_ptr->get_port() << std::endl;
         c->send(hdl,port_con_info.dump(),websocketpp::frame::opcode::text);
     }
     // c->close(hdl,websocketpp::close::status::normal,"");

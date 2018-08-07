@@ -1,5 +1,5 @@
-#ifndef GAME_SERVER_HPP
-#define GAME_SERVER_HPP
+#ifndef NETWORKING_SYSTEM_HPP
+#define NETWORKING_SYSTEM_HPP
 
 #include <vector>
 #include <websocketpp/config/asio_no_tls.hpp>
@@ -13,10 +13,10 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 
 class game;
 
-class game_server {
+class networking_system {
 public:
     // Constructor to initialize the private static data members
-    game_server(int p);
+    networking_system(int p);
 
     // Setter for setting the game_state_ptr, necessary for fully setting up game_server
     void set_game_state_ptr(game* g_state_ptr);
@@ -49,4 +49,4 @@ private:
     game* game_state_ptr;
 };
 
-#endif // GAME_SERVER_HPP
+#endif // NETWORKING_SYSTEM_HPP
