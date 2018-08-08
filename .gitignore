@@ -1,5 +1,7 @@
 build
+build_vs
 build_native
 build_debug
 node_modules
 .vscode
+.vs
