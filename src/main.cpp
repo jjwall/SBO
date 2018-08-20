@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
     // initialize game state
     game g_state;
     // initialize game server
-    networking_system n_system(std::atoi(argv[1]));
+	networking_system n_system(std::atoi(argv[1]));
     // set game state pointer prop on game server obj
     n_system.set_game_state_ptr(&g_state);
     // set game server pointer prop on game state obj

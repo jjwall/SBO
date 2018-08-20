@@ -9,7 +9,7 @@ Technologies include:
 + [PixiJS](https://github.com/pixijs/pixi.js)
 
 ### To build the project
-Using CMake, Ninja, and GCC (haven't tested with any other compilers), make a build directory and run:
+Using CMake, Ninja, and versions of GCC or MSVC that support C++ 14 and above, make a build directory and run:
 ```
 cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release
 ```

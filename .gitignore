@@ -2,6 +2,8 @@ build
 build_vs
 build_native
 build_debug
+build_x64_release
+build_x64_debug
 node_modules
 .vscode
 .vs

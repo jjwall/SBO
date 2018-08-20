@@ -113,18 +113,19 @@ function findOpenPort(gameRoomName, response) {
 }
 
 function spinUpWebSocketServer(port) {
-	var child = cp.spawn("./build_native/sbo.exe", [port]);
+	//var child = cp.spawn("./build_native/sbo.exe", [port]);
+	var child = cp.spawn("./build_x64_debug/build/x64-Debug/sbo.exe", [port]);
 	child.stdout.on('data', function(data) {
 		console.log(data.toString());
 	});
 }
 
 function isEmpty(obj) {
-    for(var key in obj) {
-        if(obj.hasOwnProperty(key))
-            return false;
-    }
-    return true;
+	for(var key in obj) {
+		if(obj.hasOwnProperty(key))
+			return false;
+	}
+	return true;
 }
 
 server.listen(PORT, function () {
